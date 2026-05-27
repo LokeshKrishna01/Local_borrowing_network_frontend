@@ -94,8 +94,8 @@ const Chat = () => {
 
   const getRecipientName = (chat) => {
     if (chat.isGroup) return chat.groupName;
-    const recipient = chat.participants.find(p => p._id !== user._id);
-    return recipient?.name || 'Unknown User';
+    const recipient = chat.participants.find(p => p && p._id !== user._id);
+    return recipient?.name || 'Deleted User';
   };
 
   return (
@@ -167,7 +167,7 @@ const Chat = () => {
                     className={`message-bubble ${msg.sender === user._id || msg.sender?._id === user._id ? 'own' : ''}`}
                   >
                     {activeChat.isGroup && (msg.sender !== user._id && msg.sender?._id !== user._id) && (
-                      <div className="sender-name">{msg.sender?.name || 'Neighbor'}</div>
+                      <div className="sender-name">{msg.sender?.name || 'Deleted User'}</div>
                     )}
                     <div className="text">{msg.text}</div>
                     <div className="time">

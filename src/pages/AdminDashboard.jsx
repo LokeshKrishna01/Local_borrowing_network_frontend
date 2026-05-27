@@ -26,6 +26,8 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [banModal, setBanModal] = useState({ open: false, userId: null });
   const [deleteModal, setDeleteModal] = useState({ open: false, itemId: null });
+  const [deleteUserModal, setDeleteUserModal] = useState({ open: false, userId: null });
+  const [isDeletingUser, setIsDeletingUser] = useState(false);
 
   const userFilters = ['all', 'pending', 'active', 'banned'];
 
@@ -81,6 +83,21 @@ const AdminDashboard = () => {
       fetchData();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to delete item');
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    const userId = deleteUserModal.userId;
+    setIsDeletingUser(true);
+    try {
+      await API.delete(`/admin/users/${userId}`);
+      toast.success('User permanently deleted');
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete user');
+    } finally {
+      setIsDeletingUser(false);
+      setDeleteUserModal({ open: false, userId: null });
     }
   };
 
@@ -268,6 +285,13 @@ const AdminDashboard = () => {
                                 <UserCheck size={14} /> Unban
                               </button>
                             )}
+                            <button
+                              className="btn btn-sm btn-danger"
+                              onClick={() => setDeleteUserModal({ open: true, userId: u._id })}
+                              title="Permanently Delete User"
+                            >
+                              <Trash2 size={14} /> Delete
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -398,6 +422,17 @@ const AdminDashboard = () => {
         title="Delete Item"
         message="Are you sure you want to delete this item? This action cannot be undone."
         confirmText="Yes, Delete Item"
+        type="danger"
+      />
+
+      <ConfirmationModal
+        isOpen={deleteUserModal.open}
+        onClose={() => setDeleteUserModal({ open: false, userId: null })}
+        onConfirm={handleDeleteUser}
+        isLoading={isDeletingUser}
+        title="Delete User Account"
+        message="Are you sure you want to permanently delete this user's account? This will erase their profile, all items they listed, all notifications, conversations, and records associated with them. This action cannot be undone."
+        confirmText="Yes, Delete Account"
         type="danger"
       />
     </div>
