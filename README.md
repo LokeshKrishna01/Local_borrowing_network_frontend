@@ -21,3 +21,6 @@ This is the React Vite frontend application for **NeighborGoods** - a hyper-loca
    ```bash
    npm run dev
    ```
+
+## Deployment
+Deployed on Vercel using `VITE_API_URL` pointing to the live Render backend api.
