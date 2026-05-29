@@ -14,6 +14,7 @@ const Register = () => {
   const [step, setStep] = useState('register');
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
+  const [fallbackOtp, setFallbackOtp] = useState('');
   const { register, verifyOTP, googleLogin } = useAuth();
   const navigate = useNavigate();
 
@@ -30,8 +31,13 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await register(name, email, password);
-      toast.success('Registration successful! Check your email for the OTP.');
+      const data = await register(name, email, password);
+      if (data && data.otp) {
+        setFallbackOtp(data.otp);
+        toast.success(`Registration successful! Fallback OTP code is: ${data.otp}`, { duration: 8000 });
+      } else {
+        toast.success('Registration successful! Check your email for the OTP.');
+      }
       setStep('otp');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Registration failed');
@@ -211,6 +217,22 @@ const Register = () => {
               <p style={{ textAlign: 'center', marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>
                 We sent a 6-digit code to <strong>{email}</strong>. Please enter it below to verify your account.
               </p>
+              {fallbackOtp && (
+                <div style={{
+                  background: 'rgba(245, 158, 11, 0.1)',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                  borderRadius: '0.75rem',
+                  padding: '1rem',
+                  color: '#fbbf24',
+                  fontSize: '0.9rem',
+                  textAlign: 'center',
+                  marginBottom: '1.5rem',
+                  fontWeight: 500
+                }}>
+                  ⚠️ Gmail SMTP delivery failed or is blocked by Google. <br />
+                  For testing, your verification OTP is: <strong style={{ fontSize: '1.25rem', display: 'block', marginTop: '0.5rem', letterSpacing: '0.1rem', color: '#fff' }}>{fallbackOtp}</strong>
+                </div>
+              )}
               <div className="form-group">
                 <label htmlFor="register-otp">Verification Code</label>
                 <div className="input-wrapper">
