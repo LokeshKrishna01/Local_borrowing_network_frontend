@@ -13,7 +13,8 @@ import {
   X,
   Star,
   Bell,
-  MessageSquare
+  MessageSquare,
+  User
 } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
 
@@ -85,6 +86,9 @@ const Navbar = () => {
             </div>
           )}
           <span className="user-name">{user.name}</span>
+          <button onClick={() => navigate('/profile')} className="btn btn-sm btn-secondary" style={{ marginRight: 'var(--space-xs)' }} id="profile-btn">
+            <User size={14} /> Profile
+          </button>
           <button onClick={handleLogout} className="btn btn-sm btn-secondary" id="logout-btn">
             <LogOut size={14} /> Logout
           </button>

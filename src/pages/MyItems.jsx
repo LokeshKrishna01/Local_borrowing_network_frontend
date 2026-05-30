@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../api/axios';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { Package, Edit, Trash2, Plus, ShieldAlert } from 'lucide-react';
+import { Package, Edit, Trash2, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,8 +12,6 @@ const MyItems = () => {
   const [loading, setLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteModal, setDeleteModal] = useState({ open: false, itemId: null });
-  const [deleteAccountOpen, setDeleteAccountOpen] = useState(false);
-  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,21 +48,6 @@ const MyItems = () => {
       toast.error(error.response?.data?.message || 'Failed to delete item');
     } finally {
       setIsDeleting(false);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    setIsDeletingAccount(true);
-    try {
-      await API.delete('/auth/profile');
-      toast.success('Your account has been deleted successfully.');
-      logout();
-      navigate('/register');
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to delete account');
-    } finally {
-      setIsDeletingAccount(false);
-      setDeleteAccountOpen(false);
     }
   };
 
@@ -148,31 +131,6 @@ const MyItems = () => {
           title="Delete Item"
           message="Are you sure you want to delete this item? This action cannot be undone."
           confirmText="Yes, Delete"
-          type="danger"
-        />
-
-        {user && user.role !== 'admin' && (
-          <div className="glass-card" style={{ marginTop: 'var(--space-2xl)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-            <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--error)', fontFamily: 'var(--font-heading)' }}>
-              <ShieldAlert size={20} /> Danger Zone
-            </h3>
-            <p style={{ color: 'var(--text-muted)', marginBottom: 'var(--space-md)' }}>
-              Permanently delete your profile and all listed items. This action is irreversible.
-            </p>
-            <button className="btn btn-danger" onClick={() => setDeleteAccountOpen(true)}>
-              Delete My Account
-            </button>
-          </div>
-        )}
-
-        <ConfirmationModal
-          isOpen={deleteAccountOpen}
-          onClose={() => setDeleteAccountOpen(false)}
-          onConfirm={handleDeleteAccount}
-          isLoading={isDeletingAccount}
-          title="Delete Account"
-          message="Are you sure you want to permanently delete your account? This will erase all your items, conversations, messages, notifications, and past records. This action cannot be undone."
-          confirmText="Yes, Delete My Account"
           type="danger"
         />
       </div>

@@ -21,6 +21,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Notifications from './pages/Notifications';
 import Chat from './pages/Chat';
 import HandoverItem from './pages/HandoverItem';
+import MyProfile from './pages/MyProfile';
 
 import './index.css';
 
@@ -104,6 +105,11 @@ const AppRoutes = () => {
         <Route path="/chat" element={
           <ProtectedRoute>
             <Chat />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <MyProfile />
           </ProtectedRoute>
         } />
 
