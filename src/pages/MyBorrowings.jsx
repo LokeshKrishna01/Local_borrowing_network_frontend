@@ -21,6 +21,27 @@ const MyBorrowings = () => {
     fetchBorrowings();
   }, []);
 
+  // Poll for borrowing updates when the QR modal is open
+  useEffect(() => {
+    if (!activeQR) return;
+
+    const interval = setInterval(() => {
+      fetchBorrowings();
+    }, 3000); // poll every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [activeQR]);
+
+  // Auto-close QR modal if the return is completed
+  useEffect(() => {
+    if (!activeQR) return;
+    const currentTxn = transactions.find((t) => t._id === activeQR);
+    if (currentTxn && currentTxn.status === 'completed') {
+      setActiveQR(null);
+      toast.success('Return confirmed! The item has been successfully returned.');
+    }
+  }, [transactions, activeQR]);
+
   const fetchBorrowings = async () => {
     try {
       const { data } = await API.get('/transactions/my-borrowings');

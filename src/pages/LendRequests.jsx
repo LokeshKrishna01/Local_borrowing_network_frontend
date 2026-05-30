@@ -21,6 +21,27 @@ const LendRequests = () => {
     fetchRequests();
   }, []);
 
+  // Poll for request updates when the QR modal is open
+  useEffect(() => {
+    if (!activeQR) return;
+
+    const interval = setInterval(() => {
+      fetchRequests();
+    }, 3000); // poll every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [activeQR]);
+
+  // Auto-close QR modal if the handover is completed
+  useEffect(() => {
+    if (!activeQR) return;
+    const currentTxn = transactions.find((t) => t._id === activeQR);
+    if (currentTxn && currentTxn.status === 'active') {
+      setActiveQR(null);
+      toast.success('Handover confirmed! The borrower has received the item.');
+    }
+  }, [transactions, activeQR]);
+
   const fetchRequests = async () => {
     try {
       const { data } = await API.get('/transactions/lend-requests');
